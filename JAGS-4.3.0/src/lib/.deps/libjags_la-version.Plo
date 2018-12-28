@@ -1,3 +1,0 @@
-libjags_la-version.lo: version.cc ../../src/include/version.h
-
-../../src/include/version.h:

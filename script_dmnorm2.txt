@@ -1,5 +1,0 @@
-model in jags_dmnorm2.txt
-data in data_dmnorm2.txt
-initialize
-update 4000
-

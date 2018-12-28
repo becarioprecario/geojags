@@ -1,8 +1,0 @@
-This package implements several spatial distributions for jags. The aim
-is to provide the similar set of distributions available in the GeoBUGS
-module for WinBUGS/OpenBUGS 
-(http://www.mrc-bsu.cam.ac.uk/software/bugs/thebugs-project-geobugs/). The code in this packages is based on:
-
-- jags source code (http://mcmc-jags.sourceforge.net)
-- runjags package (https://cran.r-project.org/web/packages/runjags/index.html)
-- paper by Wabersich and Vandekerckhove (2014)

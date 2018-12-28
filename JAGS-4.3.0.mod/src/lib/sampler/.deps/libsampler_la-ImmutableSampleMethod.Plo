@@ -1,6 +1,0 @@
-libsampler_la-ImmutableSampleMethod.lo: ImmutableSampleMethod.cc \
-  ../../../config.h ../../../src/include/sampler/ImmutableSampleMethod.h
-
-../../../config.h:
-
-../../../src/include/sampler/ImmutableSampleMethod.h:
