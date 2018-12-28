@@ -1,0 +1,42 @@
+model {
+  for(i in 1:73) {
+    Y[i]                ~ dpois(lambda[i])
+    log(lambda[i])     <- log(t[i]) + beta + S[i]
+  }
+  # spatial field representing true log contamination intensity
+  S[1:73]               ~ spatial.exp(mu[], x[], y[],
+                                      tau, phi, kappa)
+  for(i in 1:73) {
+    mu[i]              <- 0
+  }
+  # mean log contamination intensity
+  beta                  ~ dunif(-3, 7)
+  # priors on parameters of spatial covariance matrix
+  phi                   ~ dunif(0, 120)
+  kappa                 ~ dunif(0.1, 1.95)
+  sigma                 ~ dnorm(0, 1)I(0,)
+  tau                  <- 1/pow(sigma, 2)
+  for(j in 1:93) {                         # prediction
+    T[j]                ~ spatial.unipred(mu.pred[j], x.pred[j],
+                                          y.pred[j], S[])
+    exp.T[j]           <- exp(T[j] + beta) # predicted intensity
+    mu.pred[j]         <- 0
+  }
+  # combine observed and predicted locations
+  for(i in 1:73)   {
+    pred[i]            <- exp(S[i])
+  }
+  for(i in 74:166) {
+    pred[i]            <- exp.T[i-73]
+  }
+  # max value of contamination
+  max.level            <- ranked(pred[], 166)
+  for(i in 1:166) {                        # location of maximum
+    pred.rank[i]       <- rank(pred[], i)
+    prob.max[i]        <- equals(pred.rank[i], 166)
+  }
+  # prob that count/sec > 15 at location i
+  for(i in 1:166) {
+    prob.exceeds.15[i] <- step(pred[i] - 15)
+  }
+}

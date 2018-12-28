@@ -1,0 +1,10 @@
+model {
+
+  for(i in 1:N) {
+    y[i] ~ dnorm(mu[i], 1)
+  }
+  mu[1:N] ~ car.normal(adj, weights, num, tau)
+
+  tau ~ dgamma(1, 1)
+
+}

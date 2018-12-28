@@ -1,0 +1,232 @@
+
+R version 3.4.1 (2017-06-30) -- "Single Candle"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+
+R es un software libre y viene sin GARANTIA ALGUNA.
+Usted puede redistribuirlo bajo ciertas circunstancias.
+Escriba 'license()' o 'licence()' para detalles de distribucion.
+
+R es un proyecto colaborativo con muchos contribuyentes.
+Escriba 'contributors()' para obtener más información y
+'citation()' para saber cómo citar R o paquetes de R en publicaciones.
+
+Escriba 'demo()' para demostraciones, 'help()' para el sistema on-line de ayuda,
+o 'help.start()' para abrir el sistema de ayuda HTML con su navegador.
+Escriba 'q()' para salir de R.
+
+> #Estimating radioactivity levels on Rongelap Island:
+> #Example from the BUGS book
+> #https://www.mrc-bsu.cam.ac.uk/software/bugs/the-bugs-project-the-bugs-book/bugs-book-examples/
+> 
+> library(rjags)
+Loading required package: coda
+Linked to JAGS 4.3.0
+Loaded modules: basemod,bugs
+> 
+> geo.path <- paste0(system.file("", package = "geojags"), "/libs/",
++   .Platform$r_arch)
+> #Load package
+> rjags::load.module("geojags", geo.path)
+module geojags loaded
+> 
+> 
+> 
+> #Inits:
+> inits <- list(beta = 1.5, sigma = 1, phi = 10, kappa = 0.7)
+> 
+> #Data:
+> d <- list(
++ x = c(-4.033, -4.033, -3.95, -3.95, -3.867, -3.867, 
++ -3.75, -3.8, -3.8, -3.8, -3.8, -3.8, -3.773, -3.773, -3.773, 
++ -3.773, -3.773, -3.747, -3.747, -3.747, -3.747, -3.747, -3.72, 
++ -3.72, -3.72, -3.72, -3.72, -3.693, -3.693, -3.693, -3.693, -3.693, 
++ -3.633, -3.633, -3.553, -3.553, -3.553, -3.553, -3.553, -3.527, 
++ -3.527, -3.527, -3.527, -3.527, -3.5, -3.5, -3.5, -3.5, -3.5, 
++ -3.473, -3.473, -3.473, -3.473, -3.473, -3.447, -3.447, -3.447, 
++ -3.447, -3.447, -3.367, -3.367, -3.267, -3.267, -3.133, -3, -3, 
++ -2.867, -2.733, -2.6, -2.467, -2.333, -2.2, -2.067),
++ 
++ y = c(-2.18, -2.11, -2.213, -2.11, -2.233, -2.11, -2.233, -2.173, -2.147, 
++ -2.12, -2.093, -2.067, -2.173, -2.147, -2.12, -2.093, -2.067, 
++ -2.173, -2.147, -2.12, -2.093, -2.067, -2.173, -2.147, -2.12, 
++ -2.093, -2.067, -2.173, -2.147, -2.12, -2.093, -2.067, -2.233, 
++ -2.11, -2.287, -2.26, -2.233, -2.207, -2.18, -2.287, -2.26, -2.233, 
++ -2.207, -2.18, -2.287, -2.26, -2.233, -2.207, -2.18, -2.287, 
++ -2.26, -2.233, -2.207, -2.18, -2.287, -2.26, -2.233, -2.207, 
++ -2.18, -2.2, -2.11, -2.133, -2.067, -2.017, -2, -1.947, -1.907, 
++ -1.807, -1.773, -1.707, -1.673, -1.64, -1.627), 
++ 
++ Y = c(75, 371,1931, 4357, 2114, 2318, 1975, 1912, 1902, 1882, 3017, 2403, 2616, 
++ 2275, 2432, 2754, 3452, 1726, 2118, 2269, 4629, 1840, 2691, 4084, 
++ 2187, 4531, 2022, 1822, 2800, 2722, 4083, 1650, 2890, 2776, 2525, 
++ 3580, 2960, 3100, 3611, 1813, 2560, 3733, 2273, 3437, 2603, 2148, 
++ 2360, 3050, 3287, 2603, 4044, 2560, 3019, 2407, 2735, 3020, 2215, 
++ 3414, 1688, 3447, 1091, 3279, 3101, 2370, 2902, 1401, 892, 1872, 
++ 2610, 3548, 2652, 2625, 2314), 
++ 
++ t = c(300, 300, 300, 300, 300, 
++ 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 400, 
++ 300, 300, 400, 300, 360, 300, 400, 300, 300, 300, 300, 300, 300, 
++ 400, 300, 300, 300, 300, 300, 300, 300, 200, 300, 300, 300, 300, 
++ 300, 200, 300, 300, 300, 300, 300, 300, 300, 300, 200, 300, 300, 
++ 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 
++ 300, 300, 300), 
++ 
++ x.pred = c(-4.173, -4.12, -4.12, -4.12, -4.066, 
++ -4.066, -4.066, -4.013, -4.013, -4.013, -3.96, -3.96, -3.96, 
++ -3.906, -3.906, -3.906, -3.906, -3.906, -3.906, -3.853, -3.853, 
++ -3.853, -3.853, -3.8, -3.8, -3.8, -3.8, -3.746, -3.746, -3.693, 
++ -3.693, -3.693, -3.693, -3.64, -3.64, -3.64, -3.64, -3.586, -3.586, 
++ -3.586, -3.586, -3.586, -3.533, -3.533, -3.48, -3.48, -3.426, 
++ -3.426, -3.373, -3.373, -3.32, -3.32, -3.32, -3.32, -3.266, -3.266, 
++ -3.213, -3.213, -3.213, -3.16, -3.106, -3.106, -3.106, -3.053, 
++ -3.053, -2.946, -2.893, -2.84, -2.84, -2.786, -2.733, -2.68, 
++ -2.68, -2.573, -2.573, -2.52, -2.52, -2.413, -2.413, -2.36, -2.306, 
++ -2.306, -2.253, -2.253, -2.2, -2.146, -2.146, -2.093, -2.093, 
++ -2.04, -2.04, -1.986, -1.986), 
++ 
++ y.pred = c(-2.095, -2.042, -2.095, 
++ -2.148, -2.042, -2.095, -2.148, -1.988, -2.042, -2.148, -1.988, 
++ -2.042, -2.148, -1.988, -2.042, -2.095, -2.148, -2.201, -2.255, 
++ -1.988, -2.042, -2.148, -2.201, -1.988, -2.201, -2.255, -2.308, 
++ -2.201, -2.308, -2.201, -2.255, -2.308, -2.361, -2.042, -2.148, 
++ -2.201, -2.361, -2.095, -2.148, -2.201, -2.255, -2.308, -2.095, 
++ -2.148, -2.095, -2.148, -2.095, -2.148, -2.148, -2.255, -2.042, 
++ -2.095, -2.148, -2.201, -1.988, -2.095, -1.988, -2.042, -2.095, 
++ -1.988, -1.935, -1.988, -2.042, -1.935, -1.988, -1.935, -1.935, 
++ -1.828, -1.882, -1.828, -1.775, -1.775, -1.828, -1.722, -1.775, 
++ -1.722, -1.775, -1.668, -1.722, -1.722, -1.615, -1.668, -1.615, 
++ -1.668, -1.668, -1.615, -1.668, -1.562, -1.668, -1.562, -1.615, 
++ -1.562, -1.615))
+> 
+> #Remove x.pred and y.pred
+> d <- d[!names(d) %in% c("x.pred", "y.pred")]
+> #Set number of observations to use
+> d$N <- 40
+> 
+> 
+> #Number of iterations
+> n.iter <- 50000
+> n.burnin <- 5000
+> n.thin <- 50
+> 
+> #Fit model with WinBUGS
+> library(R2WinBUGS)
+Loading required package: boot
+> t.WB <- Sys.time()
+> res.WB <- bugs(data = d, inits = list(inits),
++   model.file = "rongelap_nopred.bug",
++   parameters.to.save = c( "beta", "tau", "phi", "kappa"),
++   n.chains = 1, n.iter = n.iter + n.burnin, n.burnin = n.burnin,
++   n.thin = n.thin)
+err:ole:CoGetClassObject class {0003000a-0000-0000-c000-000000000046} not registered
+err:ole:CoGetClassObject class {0003000a-0000-0000-c000-000000000046} not registered
+err:ole:CoGetClassObject no class object {0003000a-0000-0000-c000-000000000046} could be created for context 0x3
+err:ole:CoReleaseMarshalData IMarshal::ReleaseMarshalData failed with error 0x8001011d
+> t.WB <- Sys.time() - t.WB
+> 
+> 
+> #Fit model with JAGS
+> t.jags <- Sys.time()
+> m.jags <- jags.model(file = "rongelap_nopred.bug", data = d, inits = inits)
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 40
+   Unobserved stochastic nodes: 5
+   Total graph size: 435
+
+Initializing model
+
+winedevice.exe(8948,0xb0004000) malloc: *** error for object 0x401c3a08: pointer being freed was not allocated
+*** set a breakpoint in malloc_error_break to debug
+> t.jagsrun <- Sys.time()
+> update(m.jags, n.burnin)
+> res.jags <- jags.samples(m.jags,
++   variable.names = c("beta", "tau", "phi", "kappa"),
++   n.iter = n.iter, thin = n.thin)
+> t.jagsend <- Sys.time()
+> t.jags <-  t.jagsend - t.jags
+> t.jagsrun <-  t.jagsend - t.jagsrun
+> res.jags
+$beta
+mcarray:
+[1] 1.262674
+
+Marginalizing over: iteration(1000),chain(1) 
+
+$kappa
+mcarray:
+[1] 1.065362
+
+Marginalizing over: iteration(1000),chain(1) 
+
+$phi
+mcarray:
+[1] 7.473809
+
+Marginalizing over: iteration(1000),chain(1) 
+
+$tau
+mcarray:
+[1] 0.9420015
+
+Marginalizing over: iteration(1000),chain(1) 
+
+> 
+> 
+> #-- Display results
+> 
+> #Times
+> t.jags
+Time difference of 5.5679 mins
+> t.jagsrun
+Time difference of 4.711351 mins
+> t.WB
+Time difference of 5.311934 mins
+> 
+> #Marginals
+> plot.res <- function(name) {
++   plot(density(res.jags[[name]]), main = name)
++   lines(density(res.WB$sims.list[[name]]), lty = 2)
++ }
+> par(mfrow = c(2, 3))
+> sapply(c("beta", "tau", "phi", "kappa"), plot.res)
+$beta
+NULL
+
+$tau
+NULL
+
+$phi
+NULL
+
+$kappa
+NULL
+
+> 
+> 
+> # RESULTS from the BUGS book
+> #
+> #	 node	 mean	 sd	 MC error	2.5%	median	97.5%	start	sample
+> #	beta	1.841	0.3141	0.014	1.228	1.856	2.491	10001	250000
+> #	kappa	0.9327	0.2239	0.002256	0.4973	0.9317	1.368	10001	250000
+> #	max.level	32.72	12.44	0.08155	18.93	29.82	63.6	10001	250000
+> #	phi	8.547	6.106	0.1143	1.008	7.58	21.0	10001	250000
+> #	sigma	0.8377	0.2211	0.004254	0.5677	0.787	1.413	10001	250000
+> #
+> #	 node	 mean	 sd	 MC error	2.5%	median	97.5%	start	sample
+> #	beta	1.873	0.3431	0.01078	1.242	1.869	2.673	10001	1000000
+> #	kappa	0.9312	0.2246	0.001621	0.4954	0.9301	1.369	10001	1000000
+> #	max.level	32.83	12.58	0.0579	18.99	29.88	64.09	10001	1000000
+> #	phi	8.445	6.092	0.08313	0.8851	7.485	20.88	10001	1000000
+> #	sigma	0.8459	0.2311	0.00342	0.5683	0.7903	1.452	10001	1000000
+> 
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+612.336  17.468 654.226 

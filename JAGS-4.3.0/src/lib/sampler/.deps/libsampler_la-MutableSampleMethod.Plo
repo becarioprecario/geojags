@@ -1,0 +1,6 @@
+libsampler_la-MutableSampleMethod.lo: MutableSampleMethod.cc \
+  ../../../config.h ../../../src/include/sampler/MutableSampleMethod.h
+
+../../../config.h:
+
+../../../src/include/sampler/MutableSampleMethod.h:
