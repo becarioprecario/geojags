@@ -1,0 +1,14 @@
+---
+title: "geojags: spatial models with JAGS"
+author: "Virgilio Gómez-Rubio et al."
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{
+jasgs: spatial models with JAGS}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+# geojags: spatial models with JAGS
