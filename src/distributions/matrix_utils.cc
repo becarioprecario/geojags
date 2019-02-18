@@ -67,7 +67,9 @@ void create_IrhoW3( double       *PREC,
                     double       rho,
                     double       tau)
 {
-    int n[m] = {0};
+    int n[m];// = {0};
+    memset(n, 0, m * sizeof(int) );
+
     double rhotau = rho * tau;
 
     for(int i = 0; i < m ; ++i) {
@@ -101,7 +103,9 @@ void create_IlambdaW( double       *PREC,
                       double       tau)
 {
     int N = m * m;
-    int n[m-1] = {0};
+    int n[m-1]; // = {0};
+    memset(n, 0, (m -1 ) * sizeof(int) );
+
     
 
     for(int i = 0; i < m ; ++i) {
