@@ -11,4 +11,16 @@ jasgs: spatial models with JAGS}
 ---
 
 
-# geojags: spatial models with JAGS
+## Introduction
+
+## Spatial models
+
+
+## Examples
+
+### Lattice data
+
+### Geostatistical data
+
+## Conclusions
+
